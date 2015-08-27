@@ -1,4 +1,0 @@
-\select@language {spanish}
-\contentsline {section}{\numberline {1}Nociones b\'asicas}{2}
-\contentsline {section}{\numberline {2}\'Arboles}{4}
-\contentsline {section}{\numberline {3}Grafos ponderados y algoritmo de Kruskal}{6}
