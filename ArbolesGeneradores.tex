@@ -1,0 +1,343 @@
+\documentclass[a4paper, 12pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%Paquetes
+\usepackage[spanish]{babel}  
+\usepackage{indentfirst} %%%%%%%%%%%%%%%%Crear un indent al principio
+\usepackage[latin1]{inputenc}%%%%%%%%%%%%ñ y acentos
+\usepackage{amstext}%%%%%%%%
+\usepackage{amsfonts}%%%%%%%
+\usepackage{amssymb}%%%%%%%% AMSLaTeX
+\usepackage{amscd}%%%%%%%%%%
+\usepackage{amsmath}%%%%%%%%
+\usepackage{enumerate}%%%%%%%%%%%%%%%%Mejoras del entorno enumerate
+\usepackage[all]{xy}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage[mathcal]{eucal}%%%%%%%Caligrafica matematica
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{tcolorbox}
+\usepackage{setspace}
+\onehalfspacing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%Teoremas
+\newtheorem{teo}{Teorema}[section]%%%%%%%%% Teorema
+\newtheorem{defi}{Definición}[section]%%%%%%%% Definicion
+\newtheorem{lema}[teo]{Lema}%%%%%%%%%%%%% Lema
+\newtheorem{propo}[teo]{Proposición}%%%%%%%% Proposicion
+\newtheorem{cor}[teo]{Corolario}%%%%%%%%%%%Corolario
+\newcommand{\dem}{\noindent\textbf{Demostración. }\vspace{0.3 cm}}%%Demostracion
+\newcommand{\R}{\mathbb{R}}%%%%%%%%%%%%Numeros reales
+\newcommand{\fin}{ $\Box $ \vspace{0.4 cm}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fancyhdr
+\renewcommand{\headheight}{15pt}
+\usepackage{fancyhdr}
+\renewcommand{\headrulewidth}{0.4pt}
+\rhead{\small\thepage}
+\lhead{\footnotesize \bf Árboles Generadores y Árboles Mínimos}
+\cfoot{}
+\pagestyle{fancy}
+%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%
+\title{Árboles Generadores}
+\author{José Luis Tábara}
+\date{jltabara@gmail.com}
+%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+
+\vspace{-1cm}
+\maketitle
+
+\end{tcolorbox}
+
+\thispagestyle{empty}
+
+\tableofcontents
+
+\newpage
+
+\begin{quote}
+
+\abstract{Recordaremos  los resultados de teoría de grafos que vamos a utilizar.  Se introduce el concepto de árbol y se prueban diversos hechos elementales referentes a este concepto. Ya en el caso de grafos ponderados se tratan los árboles generadores de peso mínimo. Se prueba su existencia y se introduce el algoritmo de Kruskal para su cálculo.}
+
+\end{quote}
+
+\bigskip
+
+\bigskip
+
+\section{Nociones básicas}
+
+
+
+
+\begin{defi}
+
+Llamamos {\sf grafo}  a un trío $G=(V,E,\psi)$ donde $V$ y $E$ son conjuntos finitos y disjuntos y $\psi$ es una función de $E$ en el conjunto $[V \times V]$, donde hemos denotado por $[V \times V]$ al conjunto de pares no ordenados de elementos de $V$.
+
+\end{defi}
+
+Los elementos de $V$ se llaman {\sf vértices} y se representan por puntos.  Los elementos de $E$ se llaman {\sf aristas}. Dada una arista $e \in E$ si $\psi(e)=[u,v]$ (mediante $[u,v]$ denotamos el par no ordenado formado por $u$ y $v$) decimos que la arista $e$ une los vértices $u$ y $v$.  Se representa por una linea que une ambos vértices. Si existe una única arista $e \in E$ que cumple $\psi(e)=[u,v]$ es costumbre denotar dicha arista por $uv$.  Si existen varias aristas que unen los mismos vértices, decimos que el grafo tiene {\sf aristas múltiples}.  Si una arista une un vértice consigo mismo, decimos que la arista es un {\sf bucle}.
+
+Los grafos que no tienen ni aristas múltiples ni bucles, se denominan {\sf grafos simples}. Para no recargar la notación trabajaremos siempre con grafos simples y por tanto es lícito denotar a las aristas utilizando sus extremos.
+
+
+
+
+
+\begin{defi}
+
+Un  grafo $G'=(V', E', \psi')$ es un {\sf subgrafo} de $G=(V,E, \psi)$ si cumple:
+
+\begin{itemize}
+
+\item $V' \subset  V$.
+
+\item  $E' \subset E$.
+
+
+\item La función $\psi'$ es la restricción de $\psi$. 
+
+
+\end{itemize}
+Denotaremos este hecho mediante $G' \subset G$.
+
+
+
+
+\end{defi}
+
+Dado un grafo $G$, se pueden ``borrar'' vértices y aristas, teniendo en cuenta que si borramos un vértice debemos borrar todas las aristas que lo tengan como vértice.  Con  este procedimiento se pueden obtener todos los subgrafos de $G$.  Si el subgrafo $G'$ de $G$ tiene el mismo conjunto de vértices que el grafo $G$, decimos que $G'$ es un {\sf subgrafo generador}.
+
+\smallskip
+
+
+
+Dos aristas son consecutivas si tienen un vértice común. Una sucesión ordenada de aristas consecutivas se llama {\sf camino}. Dado el camino
+$$
+v_0v_1, v_1 v_2, \dots, v_{n-1} v_n
+$$
+los vértices $v_0$ y $v_n$ son los {\sf extremos} del camino. Si ambos extremos coinciden, hablaremos de {\sf camino cerrado}, también llamado {\sf ciclo}.  Si un grafo posee algún ciclo o camino cerrado diremos que el grafo es {\sf cíclico}; en caso contrario diremos que es {\sf acíclico}
+
+\begin{defi}
+
+Un grafo es {\sf conexo} si dados dos vértices arbitrarios existe al menos un camino que los une. Ello  es equivalente a que su representación gráfica sea un conjunto conexo en el sentido topológico del término.
+
+\end{defi}
+
+A partir de ahora trabajaremos con grafos conexos, asumiendo este hecho aún cuando no se mencione explícitamente.
+
+\begin{defi}
+
+Dado un grafo conexo $G$, decimos que una arista es una {\sf arista de corte} si el grafo obtenido tras eliminar la arista no es conexo.
+
+\end{defi}
+
+Si tenemos un ciclo, podemos eliminar cualquiera de las aristas que lo componen y el grafo obtenido sigue siendo conexo.  En un ciclo ninguna arista es de corte. Hemos demostrado el
+
+\begin{cor}\label{cor:corte}
+
+Una arista de corte no puede pertenecer a ningún ciclo.
+
+\end{cor}
+
+
+\section{Árboles}
+
+
+Existen muchas definiciones equivalentes de este concepto.  Optamos por la siguiente.
+
+\begin{defi}
+
+Un {\sf árbol} es un grafo conexo acíclico. Se suele denotar con la letra $T$.
+
+\end{defi}
+
+
+Como un árbol es conexo, dados dos vértices siempre se pueden unir por un camino.  Si existiese más de un camino que uniese los vértices anteriores, concatenando ambos caminos podríamos formar un camino cerrado.  Como esto no es posible, se deduce que en un árbol existe un único camino que une cada par de vértices.
+
+\begin{cor}
+
+Un grafo conexo es un árbol si y solo si cada par de vértices se pueden unir por un único camino.
+
+\end{cor}
+
+
+Tomemos una arista cualquiera $uv$ de un árbol. Evidentemente el único camino que une dichos vértices es la arista en cuestión.  Si borramos dicha arista no existe ningún camino que una dichos vértices. Todas las aristas de un árbol son de corte. Recíprocamente, si todas las aristas de un grafo son de corte, aplicando el corolario \ref{cor:corte} observamos que el grafo no puede tener ciclos.
+
+\begin{cor}
+
+Un grafo conexo es un árbol si y solo si toda arista es de corte.
+
+\end{cor}
+
+
+Otra característica que poseen los árboles es la relación existente entre el número de vértices y el de aristas.
+
+\begin{propo}
+
+En todo árbol se cumple la fórmula
+$$
+\#\text{ vértices }= \# \text{aristas} + 1
+$$
+
+\end{propo}
+
+\dem
+
+
+Denotemos por $n$ el número de vértices y por $s$ el número de aristas.  La demostración la haremos por inducción sobre el número de vértices, siendo los casos de 1 y 2 vértices evidentes.
+
+\smallskip
+
+Sea $T$ un árbol de $n$ vértices. Tomemos una arista $e$ del grafo.  Como esta arista es de corte, el grafo $T-e$ es disconexo.  Podemos escribir 
+$$
+T-e= T' \cup T''
+$$
+ siendo $T'$ y $T''$ las componentes conexas.  Como  las componentes conexas son acíclicas, son también árboles. Por hipótesis de inducción se cumple
+$$
+n'=s'+1 \qquad\qquad n''=s''+1
+$$
+Como no hemos eliminado vértices tenemos que $n=n'+n''$. En el caso de las aristas, como hemos eliminado una tenemos que $s=s'+s''+1$.  De todo lo anterior se deduce que $n=s+1$, que es lo que se quería demostrar. \fin 
+
+El recíproco de este resultado también es cierto.  Todo grafo conexo que cumpla la relación anterior entre vértices y aristas es un árbol.  Además, como no tiene ciclos, el grafo tiene únicamente una región. La fórmula de Euler hace plausible el siguiente resultado, que
+no demostraremos.
+
+\begin{propo}
+
+Un árbol es un grafo plano.
+
+\end{propo}
+
+
+
+Consideremos ahora grafos con al menos dos vértices. Veamos que dicho grafo posee al menos un subgrafo con las siguientes características:
+
+\begin{itemize}
+
+\item El subgrafo es un árbol.
+
+\item El subgrafo es generador (el conjunto de vértices del subgrafo coincide con el conjunto de vértices del grafo)
+
+\end{itemize}
+
+Cualquier grafo con las características anteriores es un {\sf árbol generador} del grafo. 
+Mostraremos, por inducción sobre el número de aristas, que existen ár\-boles generadores.
+
+\begin{teo}
+
+Todo grafo conexo con  dos o más vértices tiene un árbol generador.
+
+\end{teo}
+
+\dem
+
+Supongamos que tenemos una única arista.  Como el grafo es conexo, únicamente puede poseer dos vértices.  Entonces el mismo grafo es ya un árbol y claramente es generador.
+
+Sea $G$ un grafo con $n$ aristas.  Si el grafo es acíclico, entonces es un árbol y se termina.  Si no es acíclico, posee el menos un ciclo.  Quitamos una arista de dicho ciclo y obtenemos un camino que pasa por los mismos vértices que el ciclo inicial.  El nuevo grafo sigue siendo conexo.  Como tiene una arista menos se concluye por inducción. \fin
+
+Además de esta demostración de tipo existencial existen procedimientos algoritmos para construir árboles generadores.  Entre ellos, tal vez los más famosos, son la busqueda en anchura y la búsqueda en profundidad.  Como el algoritmo de Kruskal es independiente de estos resultados, no los trataremos aquí.
+
+
+
+
+
+\section{Grafos ponderados y algoritmo de Kruskal}
+
+\begin{defi}
+
+Un {\sf grafo ponderado} es un par $(G, \omega)$ formado por un grafo y por una función
+$$
+\begin{array}{cccc}
+ \omega: & E & \rightarrow & \R^+
+\end{array}
+$$
+Dada una arista $e$, el número positivo $\omega(e)$ se dice que es el {\sf peso} de la arista. La suma de  los pesos de todas las aristas de un grafo es el {\sf peso del grafo}.
+
+\end{defi}
+
+
+Cada grafo, sin entender que está ponderado, posee un número finito de árboles generadores.  Cada árbol generador posee un peso.  Existe entonces, al menos, un árbol generador de peso mínimo.  Es lo que se llama {\sf árbol generador de peso mínimo}, aunque muchas veces se abrevia y se dice simplemente que es un {\sf árbol mínimo}.
+
+El problema de la construcción de árboles mínimos es trivial desde un punto de vista matemático: se calculan todos los posibles árboles generadores, se calcula  el peso de cada uno y se elige de entre ellos uno que tenga peso mínimo.  Sin embargo este método no es útil en la práctica. Nosotros expondremos el algoritmo creado por Kruskal en 1956. Se trata de un procedimiento inductivo, que consta de los siguientes pasos:
+
+\begin{quote}
+
+\begin{enumerate}[1.- ]
+
+\item Se colocan las aristas ordenadas por su peso de menor a mayor.
+
+\item Se toma la primera arista y se construye el subgrafo $S$ generado por dicha arista (el subgrafo generado por una arista es el formado por dicha arista y sus vértices)
+
+\item Se pasa a la siguiente arista.  Si el grafo generado por $S$ y esta nueva arista es acíclico, entonces añadimos la arista (y sus vértices) al conjunto~$S$.
+
+\item Se repite el procedimiento del paso anterior hasta que sea imposible continuar.  El conjunto $S$ obtenido en el último paso es un árbol de Kruskal.
+
+\end{enumerate}
+
+\end{quote}
+
+Si existen aristas del mismo peso, este procedimiento puede proporcionar árboles distintos, dependiendo del orden elegido para dichas aristas.  Si las aristas tienen todas distinto peso, el árbol es único.
+
+
+
+
+\begin{teo}
+
+El árbol construido por el algoritmo de Kruskal es mínimo.
+
+\end{teo}
+
+\dem
+
+Denotemos por $T^*$ un árbol  de Kruskal. Denotemos por $e_0,e_1,e_2, \dots e_n$ las aristas, ordenadas de menor a mayor peso, que forman el árbol de Kruskal.
+Dado otro arbol generador arbitrario $T$, denotamos por $f(T)$ el menor valor $i$ tal que $e_i$ no pertenezca a $T$. De este modo, si $f(T)=k$, las aristas $e_0,e_1, \dots, e_{k-1}$ pertenecen a ambos árboles.
+
+
+
+
+\smallskip
+
+ Supongamos que $T^*$ no sea mínimo. Denotamos por $T$ a un árbol mínimo con $f(T)=k$ lo mayor posible. Si añadimos $e_k$ al árbol $T$ obtenemos un grafo con un ciclo. En dicho ciclo debe existir una arista $\alpha$ que no sea ninguna de las $e_0,\dots, e_{k-1}$. Debido al método seguido en el algoritmo de Kruskal, esta nueva arista $\alpha$ tiene que tener un peso mayor o igual que $e_k$. De este modo el nuevo árbol
+ $$
+ T'=(T+e_k)-\alpha
+ $$ 
+ es también mínimo. Pero claramente $f(T') > k= f(T)$, contradiciendo la elección de $T$. \fin 
+ 
+ \bigskip
+ 
+ 
+ \bigskip
+ 
+ 
+ \section*{Bibliografia}
+ 
+ \begin{itemize}
+ 
+ \item J. A. Bondy y S. R. Murty. {\it Graph Theory with Applications}. Noth Holland.  1976. (Existe edición electrónica)
+ 
+ \item Notas electrónicas del profesor Gregorio Hernández. \url{http://www.dma.fi.upm.es/gregorio/}
+ 
+ \item Ayuda del Programa Algraf.
+ 
+ \item Diversos applets en java con el algoritmo de Kruskal.
+ 
+\end{itemize}
+
+
+
+
+\end{document}
